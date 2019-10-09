@@ -1,28 +1,24 @@
 <?php
     class Route {
-        public static function get($path, $cb) {
+        public static function get($path, $controller) {
             $url = self::getUrl();
 
-            $request = [
-                "path" => $path,
-                "method" => "get"
-            ];
-            $response = [];
-
             if ($path === $url) {
-                $cb($request, $response);
+                $params = explode('@', $controller);
+
+                $cname = $params[0];
+                $page = (isset($params[1])) ? $params[1] : 'index';
+
+                require_once APPROOT . '/controllers/' . $cname . '.php';
+
+                new $cname($page);
+
                 exit();
             }
         }
 
-        private static function encodeParams($params) {
-            return '/' . join('/', $params);
-        }
-
         private static function getUrl() {
-            if (isset($_GET['url'])) {
-                return '/' . $_GET['url'];                
-            } 
-            return '/';
+            return (isset($_GET['url'])) ? '/' . $_GET['url'] : '/';
         }
     }
+

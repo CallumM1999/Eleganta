@@ -1,5 +1,5 @@
 <?php
-    class User {
+    class User extends Controller {
         public function __construct($page) {
             $this->$page();
         }
@@ -11,5 +11,4 @@
         private function profile() {
             echo '<p>Profile</p>';
         }
-        
     }

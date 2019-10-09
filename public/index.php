@@ -1,4 +1,4 @@
 <?php
-    require_once '../app/App.php';
+    require_once '../app/app.php';
 
     $app = new App();

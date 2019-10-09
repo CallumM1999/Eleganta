@@ -35,7 +35,6 @@
     class App {
         public function __construct() {
             // Load app config
-
             require_once '../app/config/config.php';
 
             // Autoload Core Libraries
@@ -43,55 +42,6 @@
                 require_once  APPROOT . '/libraries/' . $className . '.php';
             });
 
-
-            // echo "app";
-
             require_once APPROOT . '/routes.php';
-
         }
     }
-
-
-
-
-
-
-    // class App {
-
-    //     public function __construct() {
-
-    //         require_once APPROOT . '/router/router.php';
-        
-    //         // $request = new Request();
-
-    //         // define('Request', $request);
-
-
-
-    //     }
-
-    //     public function get($path, $cb) {
-    //         $url = $this->getUrl();
-
-    //         $request = [
-    //             "path" => $path,
-    //             "method" => "get"
-    //         ];
-    //         $response = [];
-
-    //         if ($path === $url) {
-    //             $cb($request, $response);
-    //             exit();
-    //         }
-    //     }
-
-    //     private function encodeParams($params) {
-    //         return '/' . join('/', $params);
-    //     }
-
-    //     private function getUrl() {
-    //         return '/' . $_GET['url'];
-    //     }
-
-        
-    // }

@@ -1,2 +1,4 @@
 <?php
-    echo "hello world";
+    require_once '../app/App.php';
+
+    $app = new App();

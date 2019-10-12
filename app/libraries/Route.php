@@ -24,6 +24,25 @@
                 self::handleRequest($args[0], $args[1]);
                 exit();
             }
+
+            if ($method === 'rediect') {
+                echo "Redirect";
+                exit();
+            }
+
+            if ($method === 'permamentRedirect') {
+                echo "Permament Redirect";
+                exit();
+            }
+
+            if ($method === 'view') {
+                $decodedPath = self::decodePath($args[0]);
+
+                if (is_array($decodedPath)) {
+                    View::render($args[1], $args[2]);
+                    exit();
+                }
+            }
         }
 
         /*
@@ -32,10 +51,6 @@
             ===============
             Route::redirect('/here', 'there', 301);
             Route::permamentRedirect('/here', 'there');
-
-            Route::View('/profile', 'User@profile', ["title" => "Profile"])
-
-            View parameters in url
 
         */
 
@@ -49,7 +64,7 @@
             // Valid path, parameters array returned
             if (is_array($decodedPath)) {
                 // Check if route uses a controller, or runs inline function
-                            
+
                 if (is_callable($action)) {
                     // Extract index array [12, 'callum'];
                     $args = array_map(function($param) {

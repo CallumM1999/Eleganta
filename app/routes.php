@@ -1,20 +1,8 @@
 <?php
 
-    // Route::get('/', 'User');
+   Route::view('/test', 'welcome', ["title" => "Welcome page"]);
 
 
+//    Route::any('/test', 'User@index');
 
-    // Route::get('/', function() {
-    //     echo "yeet";
-    // });
-
-
-    // Route::any('/profile/{id}/{name}', 'User@profile');
-
-    Route::any('/profile/{id}/{name}', function($id, $name) {
-        echo "Loading profile: " . $id . " , name: " . $name;
-    });
-
-
-    Route::any('*', 'Base@notfound');
 

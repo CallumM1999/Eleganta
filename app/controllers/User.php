@@ -1,17 +1,24 @@
 <?php
 
     class User extends Controller {
-        public function __construct($page) {
-            $this->$page();
+        public function index() {
+
+            $data = [
+                "title" => 'Page title'
+            ];
+
+            View::render('index', $data);
         }
 
-        private function index() {
-            // echo '<p>Index</p>';
-
-            View::render('User@index');
+        public function profile() {
+            View::render('profile');
         }
 
-        private function profile() {
-            View::render('User@profile');
+        public function post_profile() {
+            $data = [
+                "message" => "request sent"
+            ];
+
+            View::render('profile', $data);
         }
     }

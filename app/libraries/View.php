@@ -1,16 +1,11 @@
 <?php
 
 class View {
-    public static function render($view) {
-        // echo $view;
+    public static function render($view, $data = []) {
 
-
-        $params = explode('@', $view);
-
-        $cname = $params[0];
-        $page = (isset($params[1])) ? $params[1] : 'index';
-
-        require_once APPROOT . '/views/' . $cname . '/' . $page . '.php';
-
+        // Controller name
+        $cname = debug_backtrace()[1]['class'];
+        $filePath = APPROOT . '/views/' . $cname . '/' . $view . '.php';
+        require_once $filePath;
     }
 }

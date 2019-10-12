@@ -33,8 +33,6 @@
             Route::View('/profile', 'User@profile', ["title" => "Profile"])
 
             View parameters in url
-            Route::get('/users/{id}')
-            Regex constraints on url
 
         */
 
@@ -42,11 +40,35 @@
             return (strtoupper($method) === $_SERVER['REQUEST_METHOD']);
         }
 
-        private static function handleRequest($path, $controller) {
+        private static function handleRequest($path, $action) {
             $decodedPath = self::decodePath($path);
 
             // Valid path, parameters array returned
-            if (is_array($decodedPath)) self::loadPage($controller, $decodedPath);
+            if (is_array($decodedPath)) {
+                // Check if route uses a controller, or runs inline function
+                            
+                if (is_callable($action)) {
+                    // Extract index array [12, 'callum'];
+                    $args = array_map(function($param) {
+                        return current($param);
+                    }, $decodedPath);
+
+                    // Call passed function with params
+                    call_user_func_array($action, $args);
+                } else {
+                    // Extract Associative array [id => 12, name => 'callum']
+                       $params = array_reduce($decodedPath, function ($result, $item) {
+                        $key = key($item);
+                        $value = current($item);
+
+                        $result[$key] = $value;
+                        return $result;
+                    }, array());
+
+                    // Load controller with params
+                    self::loadPage($action, $params);
+                }
+            }
         }
 
         private static function decodePath($path) {
@@ -83,7 +105,8 @@
                     $parameter = $extractParameter;
 
                     // Add parameter to parameters array
-                    $parameters[$parameter] = $urlBlock;
+                    // formatted as array inside array because we need to use a key, and keep the order
+                    $parameters[] = [$parameter => $urlBlock];
                 } else if ($urlBlock !== $pathBlock) {
                     // URL doesnt match path, no point checking any other blocks
                     return false;

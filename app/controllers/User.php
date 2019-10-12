@@ -15,15 +15,10 @@
         }
 
         public function profile($params) {            
-            // Validate ID 
-            if (!isset($params['id'])) {
-                $id = false;
-            } else {
-                $id = $params['id'];
-            }
 
             $data = [
-                "id" => $id
+                "id" => $id,
+                "name" => $params['name']
             ];
 
             View::render('profile', $data);

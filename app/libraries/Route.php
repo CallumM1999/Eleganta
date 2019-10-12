@@ -6,6 +6,7 @@
             $methods = ['get', 'post', 'put', 'patch', 'delete', 'options'];
             if (in_array($method, $methods, true) && self::checkMethod($method)) {               
                 self::handleRequest($args[0], $args[1]);
+                exit();
             }
 
             // Check if method matches item in array
@@ -14,12 +15,14 @@
 
                 if (in_array(strtolower($_SERVER['REQUEST_METHOD']), $methods, true)) {               
                     self::handleRequest($args[1], $args[2]);
+                    exit();
                 }
             }
 
             // Accepts any metod
             if ($method === 'any') {
                 self::handleRequest($args[0], $args[1]);
+                exit();
             }
         }
 

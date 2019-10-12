@@ -141,7 +141,9 @@
         }
 
         private static function getUrl() {
-            return (isset($_GET['url'])) ? '/' . $_GET['url'] : '/';
+            $url = (isset($_GET['url'])) ? '/' . $_GET['url'] : '/';
+            $url = filter_var($url, FILTER_SANITIZE_URL);
+            return $url;
         }
     }
 

@@ -34,8 +34,6 @@
 
             View parameters in url
             Route::get('/users/{id}')
-            Optional parameters
-            Route::get('/users/{id?}') function($id = null)
             Regex constraints on url
 
         */
@@ -45,21 +43,73 @@
         }
 
         private static function handleRequest($path, $controller) {
-            $url = self::getUrl();
+            $decodedPath = self::decodePath($path);
 
-            if ($path === $url || $path === '*') {
-                self::loadPage($path, $controller);
-            }
+            // Valid path, parameters array returned
+            if (is_array($decodedPath)) self::loadPage($controller, $decodedPath);
         }
 
-        private static function loadPage($path, $controller) {
+        private static function decodePath($path) {
+            $url = self::getUrl();
+
+            // Split URL and path into array
+            $urlArr = explode('/', $url);
+            $urlArr[0] = 'index';
+
+            $pathArr = explode('/', $path);
+            $pathArr[0] = 'index';
+
+            // Return empty array (No parameters)
+            if ($path === '*') return [];
+            
+            // URL and params don't match, since array size should be same
+            if(sizeof($urlArr) !== sizeof($pathArr)) return false;
+            
+            // Parameters extracted from URL
+            $parameters = [];
+
+            $length = sizeof($urlArr);
+
+            for ($i=0; $i<$length;$i++) {
+
+                $urlBlock = $urlArr[$i];
+                $pathBlock = $pathArr[$i];
+
+                // Check if param block is param /users/{id}
+                $extractParameter = self::extractUrlParams($pathBlock);
+
+                if ($extractParameter !== false) {
+                    // Parameter found
+                    $parameter = $extractParameter;
+
+                    // Add parameter to parameters array
+                    $parameters[$parameter] = $urlBlock;
+                } else if ($urlBlock !== $pathBlock) {
+                    // URL doesnt match path, no point checking any other blocks
+                    return false;
+                }
+            }
+                
+            // If we've got this far, the URL must match
+            return $parameters;
+        }
+
+        private static function extractUrlParams($block) {
+            $regex = '/{\K[^}]*(?=})/m';
+            preg_match_all($regex, $block, $results);
+
+            // If results are not empty, a parameter was found
+            return (sizeof($results[0]) > 0) ? $results[0][0] : false;
+        }
+
+        private static function loadPage($controller, $parameters = []) {
             $params = explode('@', $controller);
             $cname = $params[0];
             $page = (isset($params[1])) ? $params[1] : 'index';
 
             require_once APPROOT . '/controllers/' . $cname . '.php';
 
-            new $cname($page);
+            new $cname($page, $parameters);
 
             exit();
         }

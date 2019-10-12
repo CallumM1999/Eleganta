@@ -1,7 +1,7 @@
 <?php
     class Base extends Controller {
 
-        public function notFound() {
+        public function notfound() {
             View::render('notfound');
         }
     }

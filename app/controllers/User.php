@@ -10,19 +10,22 @@
             View::render('index', $data);
         }
 
-        public function profile() {
-            View::render('profile');
+        public function test() {
+            View::render('test');
         }
 
-        public function post_profile() {
+        public function profile($params) {            
+            // Validate ID 
+            if (!isset($params['id'])) {
+                $id = false;
+            } else {
+                $id = $params['id'];
+            }
+
             $data = [
-                "message" => "request sent"
+                "id" => $id
             ];
 
             View::render('profile', $data);
-        }
-
-        public function test() {
-            View::render('test');
         }
     }

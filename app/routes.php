@@ -1,12 +1,8 @@
 <?php
 
     Route::get('/', 'User');
-    Route::post('/profile', 'User@profile');
 
-    // Route::post('/profile', 'User@post_profile');
+    Route::any('/profile/{id}', 'User@profile');
 
-
-    // Route::any('*', 'Base@notfound');
-
-    Route::match(['get', 'post'], '/yeet', 'Base@notfound');
+    Route::any('*', 'Base@notfound');
 

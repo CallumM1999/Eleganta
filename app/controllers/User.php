@@ -21,4 +21,8 @@
 
             View::render('profile', $data);
         }
+
+        public function test() {
+            View::render('test');
+        }
     }

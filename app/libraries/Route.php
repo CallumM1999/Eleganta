@@ -25,14 +25,28 @@
                 exit();
             }
 
-            if ($method === 'rediect') {
-                echo "Redirect";
-                exit();
+            if ($method === 'redirect') {
+                $decodedPath = self::decodePath($args[0]);
+
+                if (is_array($decodedPath)) {
+                    $newPath = URLROOT . $args[1];
+
+                    Header('Location: ' . $newPath, true, 301);
+                    exit();
+                } 
             }
 
-            if ($method === 'permamentRedirect') {
-                echo "Permament Redirect";
-                exit();
+            if ($method === 'permamentRedirect' || $method === 'redirect') {
+                $statusCode = ($method === 'permamentRedirect') ? '302' : '301';
+
+                $decodedPath = self::decodePath($args[0]);
+
+                if (is_array($decodedPath)) {
+                    $newPath = URLROOT . $args[1];
+
+                    Header('Location: ' . $newPath, true, $statusCode);
+                    exit();
+                } 
             }
 
             if ($method === 'view') {
@@ -44,15 +58,6 @@
                 }
             }
         }
-
-        /*
-
-            Add Route methods
-            ===============
-            Route::redirect('/here', 'there', 301);
-            Route::permamentRedirect('/here', 'there');
-
-        */
 
         private static function checkMethod($method) {
             return (strtoupper($method) === $_SERVER['REQUEST_METHOD']);

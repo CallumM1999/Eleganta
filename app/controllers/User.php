@@ -14,11 +14,10 @@
             View::render('test');
         }
 
-        public function profile($params) {            
+        public function profile() {            
 
             $data = [
-                "id" => $id,
-                "name" => $params['name']
+                "id" => '1234'    
             ];
 
             View::render('profile', $data);

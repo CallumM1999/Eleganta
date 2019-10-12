@@ -25,9 +25,18 @@
 
         /*
 
+            Add Route methods
             ===============
+            Route::redirect('/here', 'there', 301);
+            Route::permamentRedirect('/here', 'there');
+
+            Route::View('/profile', 'User@profile', ["title" => "Profile"])
+
             View parameters in url
-            request::get('/users/{id}')
+            Route::get('/users/{id}')
+            Optional parameters
+            Route::get('/users/{id?}') function($id = null)
+            Regex constraints on url
 
         */
 

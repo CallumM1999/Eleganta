@@ -1,27 +1,11 @@
 <?php
     class Route {
-        public static function get($path, $controller) {
-            self::handleRequest($path, $controller);       
-        }
+         public static function __callStatic($method, $args) {
+            $methods = ['get', 'post', 'put', 'patch', 'delete', 'options'];
 
-        public static function post($path, $controller) {
-            self::handleRequest($path, $controller);       
-        }
-
-        public static function put($path, $controller) {
-            self::handleRequest($path, $controller);       
-        }
-
-        public static function patch($path, $controller) {
-            self::handleRequest($path, $controller);       
-        }
-
-        public static function delete($path, $controller) {
-            self::handleRequest($path, $controller);       
-        }
-
-        public static function options($path, $controller) {
-            self::handleRequest($path, $controller);       
+            if (in_array($method, $methods, true)) {
+                self::handleRequest($args[0], $args[1]);
+            }
         }
 
         /*
@@ -40,14 +24,10 @@
         */
 
         private static function handleRequest($path, $controller) {
-            $requestMethod = strtoupper(debug_backtrace()[1]['function']);
+            $url = self::getUrl();
 
-            if ($_SERVER['REQUEST_METHOD'] === $requestMethod) {
-                $url = self::getUrl();
-
-                if ($path === $url) {
-                    self::loadPage($path, $controller);
-                }
+            if ($path === $url) {
+                self::loadPage($path, $controller);
             }
         }
 

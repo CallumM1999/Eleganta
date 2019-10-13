@@ -37,9 +37,13 @@
             // Load app config
             require_once '../app/config/config.php';
 
+                // Load middleware
+            require_once APPROOT . '/middleware/Middleware.php';
+
             // Autoload Core Libraries
             spl_autoload_register(function($className) {
-                require_once  APPROOT . '/libraries/' . $className . '.php';
+                $path = APPROOT . '/libraries/' . $className . '.php';
+                if(file_exists($path)) require_once $path;
             });
 
             require_once APPROOT . '/routes.php';

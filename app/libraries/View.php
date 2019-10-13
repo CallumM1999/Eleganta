@@ -6,7 +6,7 @@ class View {
         // Determine is view loaded from Route::view() or controller
         // With a controller, the file would be stored in /controller/filename.php
         // instead of /filename.php
-        $fromView = debug_backtrace()[1]['args'][0] === 'view';
+        $fromView = debug_backtrace()[1]['function'] === 'handleViewRoute';
 
         $filePath = '';
 

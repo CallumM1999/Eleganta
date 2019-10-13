@@ -9,8 +9,12 @@
     Route::any('/middleware', 'auth', 'Base@middleware');
 
     Route::any('/func', function($request, $params) {
-        
-        echo "Inline function method works";
+
+        $data = [
+            "title" => "Page title"
+        ];
+
+        View::render('func', $data);
 
     });
 

@@ -1,7 +1,7 @@
 <?php
 
     abstract class Controller {
-        public function __construct($page, $params) {
-            $this->$page($params);
+        public function __construct($page, $request, $params) {
+            $this->$page($request, $params);
         }
     }

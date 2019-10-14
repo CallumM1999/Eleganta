@@ -1,100 +1,120 @@
 <?php
     class Route {
-         public static function __callStatic($method, $args) {
+         public static function __callStatic($routeMethod, $args) {
+            // Check request method
+            // ====================
+
+            $requestMethod = strtolower($_SERVER['REQUEST_METHOD']);
+            $path;
+
+            // Match Route method passes array for first parameter, than path
+            if ($routeMethod === 'match') {
+                // example ['get', 'post']
+                $matchMethodsArray = array_shift($args);
+                $path = array_shift($args);
+            } else {
+                $path = array_shift($args);    
+            }
+
+            // Check method matches URL
+            if (!self::checkRequestPath($path)) return;
 
             // Check if method is in array below
             $methods = ['get', 'post', 'put', 'patch', 'delete', 'options'];
-            if (in_array($method, $methods, true) && self::checkMethod($method)) {               
-                self::handleRequest($args[0], $args[1]);
+            // If Request method is one of the above, and is actual method
+            if (in_array($routeMethod, $methods, true) && $routeMethod === $requestMethod) {               
+                self::handlePageRequest($path, $args);
                 exit();
             }
 
             // Check if method matches item in array
-            if ($method === 'match') {
-                $methods = $args[0];
-
-                if (in_array(strtolower($_SERVER['REQUEST_METHOD']), $methods, true)) {               
-                    self::handleRequest($args[1], $args[2]);
+            if ($routeMethod === 'match') {
+                // If request method matches one of the passed methods
+                if (in_array($requestMethod, $matchMethodsArray, true)) {
+                    self::handlePageRequest($path, $args);
                     exit();
                 }
             }
 
             // Accepts any metod
-            if ($method === 'any') {
-                self::handleRequest($args[0], $args[1]);
+            if ($routeMethod === 'any') {
+                // Doesn't matter what the actual method is
+                self::handlePageRequest($path, $args);
                 exit();
             }
 
-            if ($method === 'redirect') {
-                $decodedPath = self::decodePath($args[0]);
-
-                if (is_array($decodedPath)) {
-                    $newPath = URLROOT . $args[1];
-
-                    Header('Location: ' . $newPath, true, 301);
-                    exit();
-                } 
+            if ($routeMethod === 'permamentRedirect' || $routeMethod === 'redirect') {
+                self::redirect($routeMethod, $args[0]);
+                exit();
             }
 
-            if ($method === 'permamentRedirect' || $method === 'redirect') {
-                $statusCode = ($method === 'permamentRedirect') ? '302' : '301';
-
-                $decodedPath = self::decodePath($args[0]);
-
-                if (is_array($decodedPath)) {
-                    $newPath = URLROOT . $args[1];
-
-                    Header('Location: ' . $newPath, true, $statusCode);
-                    exit();
-                } 
-            }
-
-            if ($method === 'view') {
-                $decodedPath = self::decodePath($args[0]);
-
-                if (is_array($decodedPath)) {
-                    View::render($args[1], $args[2]);
-                    exit();
-                }
+            if ($routeMethod === 'view') {
+                self::handleViewRoute($args);
+                exit();
             }
         }
 
+        private static function handleViewRoute($args) {
+            $view = $args[0];
+            $data = (isset($args[1])) ? $args[1] : [];
+
+            View::render($view, $data);
+        }
+
+        
         private static function checkMethod($method) {
-            return (strtoupper($method) === $_SERVER['REQUEST_METHOD']);
+            return (strtoupper($method) === strtoupper($_SERVER['REQUEST_METHOD']));
         }
 
-        private static function handleRequest($path, $action) {
-            $decodedPath = self::decodePath($path);
+        private static function redirect($routeMethod, $dest) {
+            $statusCode = ($routeMethod === 'permamentRedirect') ? '302' : '301';
+            $newPath = URLROOT . $dest;
 
-            // Valid path, parameters array returned
-            if (is_array($decodedPath)) {
-                // Check if route uses a controller, or runs inline function
+            Header('Location: ' . $newPath, true, $statusCode);
+            exit();
+        }
 
-                if (is_callable($action)) {
-                    // Extract index array [12, 'callum'];
-                    $args = array_map(function($param) {
-                        return current($param);
-                    }, $decodedPath);
+        private static function handlePageRequest($path, $args) {
+            // Handles a normal request route
+            // An arg will consist of middleware, then an inline function or controller to load
+            $request = [];
+            $urlParams = self::decodePath($path);
+            $lastElement = sizeof($args) -1;
 
-                    // Call passed function with params
-                    call_user_func_array($action, $args);
+            foreach($args as $index => $arg) {
+
+                if ($index === $lastElement) {
+                    // Either inline function or controller
+                    if (is_callable($arg)) {
+                        call_user_func_array($arg, [$request, $urlParams]);
+                    } else {
+                        self::loadController($arg, $request, $urlParams);
+                    }
                 } else {
-                    // Extract Associative array [id => 12, name => 'callum']
-                       $params = array_reduce($decodedPath, function ($result, $item) {
-                        $key = key($item);
-                        $value = current($item);
+                    // Is middleware
 
-                        $result[$key] = $value;
-                        return $result;
-                    }, array());
+                    if (is_callable($arg)) {
+                        $request = $arg($request);
+                    } else {
+                        $request = Middleware::$arg($request);
+                    }
 
-                    // Load controller with params
-                    self::loadPage($action, $params);
+                    // Check middleware returned $request Array
+                    if ($request === null || !is_array($request)) {
+                        $message = "Middleware didn't return valid \$request Array. Recieved " . gettype($request) . ".";
+                        die($message);
+                    }
+
                 }
             }
         }
 
-        private static function decodePath($path) {
+        private static function checkRequestPath($path) {
+            $decodedPath = self::decodePath($path);
+            return $decodedPath !== false;
+        }
+
+        private static function decodePath($path) {            
             $url = self::getUrl();
 
             // Split URL and path into array
@@ -116,7 +136,6 @@
             $length = sizeof($urlArr);
 
             for ($i=0; $i<$length;$i++) {
-
                 $urlBlock = $urlArr[$i];
                 $pathBlock = $pathArr[$i];
 
@@ -128,8 +147,8 @@
                     $parameter = $extractParameter;
 
                     // Add parameter to parameters array
-                    // formatted as array inside array because we need to use a key, and keep the order
-                    $parameters[] = [$parameter => $urlBlock];
+                    $parameters[$parameter] = $urlBlock;
+
                 } else if ($urlBlock !== $pathBlock) {
                     // URL doesnt match path, no point checking any other blocks
                     return false;
@@ -148,14 +167,14 @@
             return (sizeof($results[0]) > 0) ? $results[0][0] : false;
         }
 
-        private static function loadPage($controller, $parameters = []) {
+        private static function loadController($controller, $request, $parameters = []) {
             $params = explode('@', $controller);
             $cname = $params[0];
             $page = (isset($params[1])) ? $params[1] : 'index';
 
             require_once APPROOT . '/controllers/' . $cname . '.php';
 
-            new $cname($page, $parameters);
+            new $cname($page, $request, $parameters);
 
             exit();
         }

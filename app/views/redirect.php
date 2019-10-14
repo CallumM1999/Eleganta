@@ -1,0 +1,1 @@
+<P>Redirect route works!</P>

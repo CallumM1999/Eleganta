@@ -39,9 +39,18 @@
 
             // Autoload Core Libraries
             spl_autoload_register(function($className) {
-                require_once  APPROOT . '/libraries/' . $className . '.php';
+                $path = APPROOT . '/libraries/' . $className . '.php';
+                if(file_exists($path)) require_once $path;
             });
 
+            // Load middleware
+            require_once APPROOT . '/middleware/Middleware.php';
+
             require_once APPROOT . '/routes.php';
+
+            // If no route found
+            http_response_code(404);
+            exit();
+
         }
     }

@@ -1,0 +1,1 @@
+<p>Middleware route</p>

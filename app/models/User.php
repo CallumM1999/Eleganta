@@ -1,7 +1,7 @@
 <?php
 
-    class Database {
+    class User {
         public function __construct() {
-            echo "loading database";
+            $this->db = new Database();
         }
     }

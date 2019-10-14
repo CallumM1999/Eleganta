@@ -174,7 +174,10 @@
 
             require_once APPROOT . '/controllers/' . $cname . '.php';
 
-            new $cname($page, $request, $parameters);
+            // Initiate class
+            $baseName = $Base = new $cname();
+            // Call class method
+            $baseName->$page($request, $parameters);
 
             exit();
         }

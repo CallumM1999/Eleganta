@@ -1,7 +1,11 @@
 <?php
 
     abstract class Controller {
-        public function __construct($page, $request, $params) {
-            $this->$page($request, $params);
+        // Load model
+        protected function model($model) {
+            require_once APPROOT . '/models/' . $model . '.php';
+
+            // Instantiate Model
+            return new $model();
         }
     }

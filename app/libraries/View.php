@@ -8,7 +8,7 @@ class View {
         // instead of /filename.php
 
         $fromView = debug_backtrace()[1]['class'] === 'Route';
-        $fromController = debug_backtrace()[2]['class'] === 'Controller';
+        $fromController = debug_backtrace()[2]['function'] === 'loadController';
 
         $filePath = '';
 

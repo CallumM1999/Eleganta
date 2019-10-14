@@ -1,7 +1,11 @@
 <?php
     class Base extends Controller {
 
-        public function home() {
+        public function __construct() {
+            $this->userModel = $this->model('User');
+        }
+
+        public function home($request, $params) {
             View::render('home');
         }
 

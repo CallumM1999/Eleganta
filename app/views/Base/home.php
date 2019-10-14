@@ -1,3 +1,5 @@
+<?php include APPROOT . '/views/inc/header.php'; ?>
+
 <h1>Home page</h1>
 
 <p><strong>Methods to test</strong></p>
@@ -17,3 +19,5 @@
     <li><a href="<?= URLROOT ?>/func">Inline function route</a></li>
     <li><a href="<?= URLROOT ?>/sfsdifalsgdfh">Undefined route ( Route::any('*') )</a></li>
 </ul>
+
+<?php include APPROOT . '/views/inc/footer.php'; ?>

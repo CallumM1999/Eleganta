@@ -6,6 +6,7 @@
             require_once APPROOT . '/models/' . $model . '.php';
 
             // Instantiate Model
-            return new $model();
+            $class = 'Model\\' . $model;
+            return new $class();
         }
     }

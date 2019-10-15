@@ -1,8 +1,12 @@
 <?php
-    class Base extends Controller {
+    namespace Controller;
+
+    use \View as View;
+
+    class Base extends \Controller {
 
         public function __construct() {
-            $this->userModel = $this->model('User');
+            $this->baseModel = $this->model('Base');
         }
 
         public function home($request, $params) {
@@ -19,7 +23,13 @@
         }
 
         public function match() {
-            View::render('match');
+            $results = $this->baseModel->getUsers();
+
+            $data = [
+                "users" => $results
+            ];
+
+            View::render('match', $data);
         }
 
         public function any() {

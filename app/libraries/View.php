@@ -8,7 +8,7 @@ class View {
         // instead of /filename.php
 
         $fromView = debug_backtrace()[1]['class'] === 'Route';
-        $fromController = debug_backtrace()[2]['class'] === 'Controller';
+        $fromController = debug_backtrace()[2]['function'] === 'loadController';
 
         $filePath = '';
 
@@ -17,6 +17,8 @@ class View {
         } else if ($fromController) {
             // Controller name
             $cname = debug_backtrace()[1]['class'];
+            // Remove namespace
+            $cname = explode("\\", $cname)[1];
             $filePath = APPROOT . '/views/' . $cname . '/' . $view . '.php';
         } else {
             $filePath = APPROOT . '/views/' . $view . '.php'; 

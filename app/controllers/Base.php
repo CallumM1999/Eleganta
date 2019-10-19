@@ -36,6 +36,10 @@
         }
 
         public function template() {
-            View::render('template');
+            $data = [
+                "title" => "Page Title"
+            ];
+
+            View::render('template', $data);
         }
     }

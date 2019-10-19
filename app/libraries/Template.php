@@ -14,16 +14,6 @@
             "unless" => [ "re" => "/@unless\((.*)\)/m", "rpl" => "<?php if(!(@)): ?>", "innerval" => true ],
             "endunless" => [ "re" => "/@endunless/m", "rpl" => "<?php endif; ?>", "innerval" => false ],
             
-            /*
-            Variables not included yet
-
-            "isset" => [ "re" => "/@isset\((.*)\)/m", "rpl" => ["<?php if(isset(", ")): ?>"] ],
-            "endisset" => [ "re" => "/@endisset/m", "rpl" => "<?php endif; ?>" ],
-
-            "empty" => [ "re" => "/@empty\((.*)\)/m", "rpl" => ["<?php if(!isset(", ")): ?>"] ],
-            "endempty" => [ "re" => "/@endempty/m", "rpl" => "<?php endif; ?>" ],
-            */
-
             "switch" => [ "re" => "/@switch\((.*)\)/m", "rpl" => "<?php switch(@): ?>", "innerval" => true ],
             "case" => [ "re" => "/@case\((.*)\)/m", "rpl" => "<?php case @ : ?>", "innerval" => true ],
             "default" => [ "re" => "/@default/m", "rpl" => "<?php default: ?>", "innerval" => false ],
@@ -40,30 +30,7 @@
 
             "var" => [ "re" => "/\{\{(.*?)\}\}/m", "rpl" => "<?= isset($@) ? $@ : \$data['@'] ?>", "innerval" => true ],
 
-
         ];
-
-        /*
-
-        @unless
-        @endunless
-
-        @isset
-
-        @empty
-
-        @switch
-        @case
-        @break
-        @default
-        @endswitch
-
-        @foreach
-        @endforeach
-
-
-
-        */
 
         public function __construct($filePath, $data = []) {
             // Data used in template
@@ -123,10 +90,7 @@
         }
 
         public function render() {
-            $data = [
-                "name" => "callum",
-                "title" => "Page Title"
-            ];
+            $data = $this->data;
 
             $trimmed = preg_replace('~>\s+<~', '><', $this->template);
             echo eval(' ?>' . $trimmed . '<?php ');

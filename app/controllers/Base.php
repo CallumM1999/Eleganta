@@ -1,6 +1,7 @@
 <?php
     namespace Controller;
 
+
     use \View as View;
 
     class Base extends \Controller {
@@ -9,13 +10,17 @@
             $this->baseModel = $this->model('Base');
         }
 
-        public function home($request, $params) {
-            View::render('home');
+        public function home() {
+            $data = [
+                "title" => "Home Page"
+            ];
+
+            View::render('home', $data);
         }
 
         public function notfound() {
             http_response_code(404);
-            View::render('notfound');
+            View::render('notfound', ["title" => "404"]);
         }
 
         public function post() {
@@ -26,20 +31,26 @@
             $results = $this->baseModel->getUsers();
 
             $data = [
-                "users" => $results
+                "users" => $results,
+                "title" => "Match"
             ];
 
             View::render('match', $data);
         }
 
         public function any() {
-            View::render('any');
+            $data = [
+                "title" => "Any Page"
+            ];
+
+            View::render('any', $data);
         }
 
         public function middleware($request, $params) {
 
             $data = [
                 'auth' => (isset($request['auth']) && $request['auth'] === true) ? 'true' : 'false',
+                "title" => "Middleware Page"
             ];
 
             View::render('middleware', $data);

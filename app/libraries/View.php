@@ -32,7 +32,7 @@ class View {
         // instead of /filename
 
         $fromView = debug_backtrace()[2]['class'] === 'Route';
-        $fromController = debug_backtrace()[3]['class'] === 'Controller';
+        $fromController = debug_backtrace()[3]['function'] === 'loadController';
 
         $path = '';
 

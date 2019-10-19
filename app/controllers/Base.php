@@ -10,7 +10,7 @@
             $this->baseModel = $this->model('Base');
         }
 
-        public function home($request, $params) {
+        public function home() {
             $data = [
                 "title" => "Home Page"
             ];

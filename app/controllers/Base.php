@@ -36,11 +36,6 @@
         }
 
         public function template() {
-            // View::render('template');
-
-            $path = APPROOT . '/views/Base/template.php';
-            $template = new Template($path, []);    
-            
-            $template->render();
+            View::render('template');
         }
     }

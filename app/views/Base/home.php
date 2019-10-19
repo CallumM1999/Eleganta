@@ -18,6 +18,7 @@
     <li><a href="<?= URLROOT ?>/middleware">Middleware</a></li>
     <li><a href="<?= URLROOT ?>/func">Inline function route</a></li>
     <li><a href="<?= URLROOT ?>/sfsdifalsgdfh">Undefined route ( Route::any('*') )</a></li>
+    <li><a href="<?= URLROOT ?>/template">Template engine route template.tmp.php</a></li>
 </ul>
 
 <?php include APPROOT . '/views/inc/footer.php'; ?>

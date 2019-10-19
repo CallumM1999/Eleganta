@@ -26,13 +26,17 @@
 
             "switch" => [ "re" => "/@switch\((.*)\)/m", "rpl" => "<?php switch(@): ?>", "innerval" => true ],
             "case" => [ "re" => "/@case\((.*)\)/m", "rpl" => "<?php case @ : ?>", "innerval" => true ],
-            "break" => [ "re" => "/@break/m", "rpl" => "<?php break; ?>", "innerval" => false ],
             "default" => [ "re" => "/@default/m", "rpl" => "<?php default: ?>", "innerval" => false ],
             "endswitch" => [ "re" => "/@endswitch/m", "rpl" => "<?php endswitch; ?>", "innerval" => false ],
 
             "foreach" => [ "re" => "/@foreach\((.*)\)/m", "rpl" => "<?php foreach(@): ?>", "innerval" => true ],
             "endforeach" => [ "re" => "/@endforeach/m", "rpl" => "<?php endforeach; ?>", "innerval" => false ],
 
+            "for" => [ "re" => "/@for\((.*)\)/m", "rpl" => "<?php for(@): ?>", "innerval" => true ],
+            "endfor" => [ "re" => "/@endfor/m", "rpl" => "<?php endfor; ?>", "innerval" => false ],
+
+
+            "break" => [ "re" => "/@break/m", "rpl" => "<?php break; ?>", "innerval" => false ],
 
             "var" => [ "re" => "/\{\{(.*?)\}\}/m", "rpl" => "<?= isset($@) ? $@ : \$data['@'] ?>", "innerval" => true ],
 

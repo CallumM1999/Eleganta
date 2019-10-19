@@ -40,7 +40,10 @@ class View {
             $path = APPROOT . '/views/' . $view;       
         } else if ($fromController) {
             // Controller name
+
             $cname = debug_backtrace()[2]['class'];
+            // Remove namespace
+            $cname = explode("\\", $cname)[1];
             $path = APPROOT . '/views/' . $cname . '/' . $view;
         } else {
             $path = APPROOT . '/views/' . $view; 

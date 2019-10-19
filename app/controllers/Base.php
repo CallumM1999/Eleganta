@@ -1,7 +1,16 @@
 <?php
-    class Base extends Controller {
+    namespace Controller;
 
-        public function home() {
+
+    use \View as View;
+
+    class Base extends \Controller {
+
+        public function __construct() {
+            $this->baseModel = $this->model('Base');
+        }
+
+        public function home($request, $params) {
             $data = [
                 "title" => "Home Page"
             ];
@@ -19,7 +28,10 @@
         }
 
         public function match() {
+            $results = $this->baseModel->getUsers();
+
             $data = [
+                "users" => $results,
                 "title" => "Match"
             ];
 

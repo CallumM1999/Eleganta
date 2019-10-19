@@ -54,7 +54,7 @@ class View {
     }
 
     private static function templateView($path, $data) {
-        $template = new Template($path, $data);        
-        $template->render();
+        $template = new Template($path);        
+        $template->render($data);
     }
 }

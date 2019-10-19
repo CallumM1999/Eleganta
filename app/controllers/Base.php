@@ -15,7 +15,11 @@
         }
 
         public function match() {
-            View::render('match');
+            $data = [
+                "title" => "Match"
+            ];
+
+            View::render('match', $data);
         }
 
         public function any() {

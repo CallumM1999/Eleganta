@@ -6,13 +6,13 @@
         private $methods;
 
         private $checks = [
-            "if" => [ "re" => "/@if\((.*)\)/m", "rpl" => ["<?php if (", ") : ?>"] ],
-            "elseif" => [ "re" => "/@elseif\((.*)\)/m", "rpl" => ["<?php elseif (", "): ?>"] ],
-            "else" => [ "re" => "/@else/m", "rpl" => "<?php else: ?>" ],
-            "endif" => [ "re" => "/@endif/m", "rpl" => "<?php endif ?>" ],
+            "if" => [ "re" => "/@if\((.*)\)/m", "rpl" => "<?php if (@) : ?>", "innerval" => true ],
+            "elseif" => [ "re" => "/@elseif\((.*)\)/m", "rpl" => "<?php elseif (@): ?>", "innerval" => true ],
+            "else" => [ "re" => "/@else/m", "rpl" => "<?php else: ?>", "innerval" => false ],
+            "endif" => [ "re" => "/@endif/m", "rpl" => "<?php endif ?>", "innerval" => false ],
 
-            "unless" => [ "re" => "/@unless\((.*)\)/m", "rpl" => ["<?php if(!(", ")): ?>"] ],
-            "endunless" => [ "re" => "/@endunless/m", "rpl" => "<?php endif; ?>" ],
+            "unless" => [ "re" => "/@unless\((.*)\)/m", "rpl" => "<?php if(!(@)): ?>", "innerval" => true ],
+            "endunless" => [ "re" => "/@endunless/m", "rpl" => "<?php endif; ?>", "innerval" => false ],
             
             /*
             Variables not included yet
@@ -24,14 +24,19 @@
             "endempty" => [ "re" => "/@endempty/m", "rpl" => "<?php endif; ?>" ],
             */
 
-            "switch" => [ "re" => "/@switch\((.*)\)/m", "rpl" => ["<?php switch(", "): ?>"] ],
-            "case" => [ "re" => "/@case\((.*)\)/m", "rpl" => ["<?php case ", " : ?>"] ],
-            "break" => [ "re" => "/@break/m", "rpl" => "<?php break; ?>" ],
-            "default" => [ "re" => "/@default/m", "rpl" => "<?php default: ?>" ],
-            "endswitch" => [ "re" => "/@endswitch/m", "rpl" => "<?php endswitch; ?>" ],
+            "switch" => [ "re" => "/@switch\((.*)\)/m", "rpl" => "<?php switch(@): ?>", "innerval" => true ],
+            "case" => [ "re" => "/@case\((.*)\)/m", "rpl" => "<?php case @ : ?>", "innerval" => true ],
+            "break" => [ "re" => "/@break/m", "rpl" => "<?php break; ?>", "innerval" => false ],
+            "default" => [ "re" => "/@default/m", "rpl" => "<?php default: ?>", "innerval" => false ],
+            "endswitch" => [ "re" => "/@endswitch/m", "rpl" => "<?php endswitch; ?>", "innerval" => false ],
 
-            "foreach" => [ "re" => "/@foreach\((.*)\)/m", "rpl" => ["<?php foreach(", "): ?>"] ],
-            "endforeach" => [ "re" => "/@endforeach/m", "rpl" => "<?php endforeach; ?>" ]
+            "foreach" => [ "re" => "/@foreach\((.*)\)/m", "rpl" => "<?php foreach(@): ?>", "innerval" => true ],
+            "endforeach" => [ "re" => "/@endforeach/m", "rpl" => "<?php endforeach; ?>", "innerval" => false ],
+
+
+            "var" => [ "re" => "/\{\{(.*?)\}\}/m", "rpl" => "<?= isset($@) ? $@ : \$data['@'] ?>", "innerval" => true ],
+
+
         ];
 
         /*
@@ -79,7 +84,8 @@
             foreach($methods as $index => $value) {
                 $rpl = $checks[$value['name']]['rpl'];
                 $match = $value['value'];
-                $replacement = (is_array($rpl)) ? $rpl[0] . $value['contents'] . $rpl[1] : $rpl;     
+
+                $replacement = ($value['innerval']) ? str_replace('@', trim($value['contents']), $rpl) : $rpl;
                 $newTemplate = str_replace($match, $replacement, $newTemplate);
             };
 
@@ -103,7 +109,8 @@
                         "name" => $key,
                         "position" => $x[1],
                         "contents" => isset($matches[1]) ? $matches[1][$index][0] : null,
-                        "value" => $x[0]
+                        "value" => $x[0],
+                        "innerval" => $check['innerval']
                     ];
                     $methods[] = $obj;
                 }
@@ -112,6 +119,11 @@
         }
 
         public function render() {
+            $data = [
+                "name" => "callum",
+                "title" => "Page Title"
+            ];
+
             $trimmed = preg_replace('~>\s+<~', '><', $this->template);
             echo eval(' ?>' . $trimmed . '<?php ');
         }

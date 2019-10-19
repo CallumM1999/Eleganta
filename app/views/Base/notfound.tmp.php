@@ -2,6 +2,6 @@
 
 @section('content')
 
-<p>Match page works!</p>
+<p>404 - Not found</p>
 
 @endsection

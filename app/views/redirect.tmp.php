@@ -2,6 +2,6 @@
 
 @section('content')
 
-<p>Match page works!</p>
+<p>Redirect route works!</p>
 
 @endsection

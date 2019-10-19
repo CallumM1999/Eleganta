@@ -10,7 +10,51 @@
             "elseif" => [ "re" => "/@elseif\((.*)\)/m", "rpl" => ["<?php elseif (", "): ?>"] ],
             "else" => [ "re" => "/@else/m", "rpl" => "<?php else: ?>" ],
             "endif" => [ "re" => "/@endif/m", "rpl" => "<?php endif ?>" ],
+
+            "unless" => [ "re" => "/@unless\((.*)\)/m", "rpl" => ["<?php if(!(", ")): ?>"] ],
+            "endunless" => [ "re" => "/@endunless/m", "rpl" => "<?php endif; ?>" ],
+            
+            /*
+            Variables not included yet
+
+            "isset" => [ "re" => "/@isset\((.*)\)/m", "rpl" => ["<?php if(isset(", ")): ?>"] ],
+            "endisset" => [ "re" => "/@endisset/m", "rpl" => "<?php endif; ?>" ],
+
+            "empty" => [ "re" => "/@empty\((.*)\)/m", "rpl" => ["<?php if(!isset(", ")): ?>"] ],
+            "endempty" => [ "re" => "/@endempty/m", "rpl" => "<?php endif; ?>" ],
+            */
+
+            "switch" => [ "re" => "/@switch\((.*)\)/m", "rpl" => ["<?php switch(", "): ?>"] ],
+            "case" => [ "re" => "/@case\((.*)\)/m", "rpl" => ["<?php case ", " : ?>"] ],
+            "break" => [ "re" => "/@break/m", "rpl" => "<?php break; ?>" ],
+            "default" => [ "re" => "/@default/m", "rpl" => "<?php default: ?>" ],
+            "endswitch" => [ "re" => "/@endswitch/m", "rpl" => "<?php endswitch; ?>" ],
+
+            "foreach" => [ "re" => "/@foreach\((.*)\)/m", "rpl" => ["<?php foreach(", "): ?>"] ],
+            "endforeach" => [ "re" => "/@endforeach/m", "rpl" => "<?php endforeach; ?>" ]
         ];
+
+        /*
+
+        @unless
+        @endunless
+
+        @isset
+
+        @empty
+
+        @switch
+        @case
+        @break
+        @default
+        @endswitch
+
+        @foreach
+        @endforeach
+
+
+
+        */
 
         public function __construct($filePath, $data = []) {
             // Data used in template
@@ -35,16 +79,7 @@
             foreach($methods as $index => $value) {
                 $rpl = $checks[$value['name']]['rpl'];
                 $match = $value['value'];
-                $replacement;
-        
-                if (is_array($rpl)) {
-                    // Value is sandwiched 
-                    $replacement = $rpl[0] . $value['contents'] . $rpl[1];
-                } else {
-                    $replacement = $rpl;
-                }
-        
-                
+                $replacement = (is_array($rpl)) ? $rpl[0] . $value['contents'] . $rpl[1] : $rpl;     
                 $newTemplate = str_replace($match, $replacement, $newTemplate);
             };
 
@@ -77,6 +112,7 @@
         }
 
         public function render() {
-            echo eval(' ?>' . $this->template . '<?php ');
+            $trimmed = preg_replace('~>\s+<~', '><', $this->template);
+            echo eval(' ?>' . $trimmed . '<?php ');
         }
     }

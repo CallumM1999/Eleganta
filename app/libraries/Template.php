@@ -1,6 +1,6 @@
 <?php 
 
-    class Render {
+    class Template {
         private $data;
         private $template;
         private $methods;
@@ -80,8 +80,3 @@
             echo eval(' ?>' . $this->template . '<?php ');
         }
     }
-
-    $path = './template.php';
-    $template = new Render($path, []);    
-    
-    $template->render();

@@ -21,4 +21,6 @@
     Route::view('/redirectend', 'redirect');
     Route::redirect('/redirect', '/redirectend');
 
+    Route::get('/template', 'Base@template');
+
     Route::any('*', 'Base@notfound');

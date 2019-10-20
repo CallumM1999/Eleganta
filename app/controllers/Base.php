@@ -27,12 +27,13 @@
             View::render('post');
         }
 
-        public function match() {
+        public function match($request, $params) {
             $results = $this->baseModel->getUsers();
 
             $data = [
                 "users" => $results,
-                "title" => "Match"
+                "title" => "Match",
+                "id" => $params['id']
             ];
 
             View::render('match', $data);

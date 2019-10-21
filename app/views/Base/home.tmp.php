@@ -20,3 +20,8 @@
     </ul>
 
 @endsection
+
+
+@section('end')
+    <p>End section: {{ title }}</p>
+@endsection

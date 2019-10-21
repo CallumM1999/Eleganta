@@ -4,7 +4,7 @@
         private $data;
         private $template;
         private $methods;
-
+     
         private $methodChecks = [
             "if" => [ "re" => "/@if\((.*)\)/m", "rpl" => "<?php if (@) : ?>", "innerval" => true ],
             "elseif" => [ "re" => "/@elseif\((.*)\)/m", "rpl" => "<?php elseif (@): ?>", "innerval" => true ],
@@ -30,25 +30,19 @@
 
             "var" => [ "re" => "/\{\{(.*?)\}\}/m", "rpl" => "<?= isset($@) ? $@ : \$data['@'] ?>", "innerval" => true ],
         ];
-
-        private $layoutChecks = [
-            "yield" => [ "re" => "/@yield\((.*)\)/m" ],            
-        ];
-
-
+    
         public function __construct($filePath) {
             // Load template contents into string variable
             $currentTemplate = file_get_contents($filePath);
 
             // Add contents from @extends 
-            preg_match_all("/@extends\((.*)\)/m", $currentTemplate, $matches, PREG_OFFSET_CAPTURE);
+            $matches = $this->templateFindExtends($currentTemplate);
     
             if (sizeof($matches[0]) > 1) throw new Exception('Template can only extend one template');
 
             if (sizeof($matches[0]) === 1) {
                 // render from extended template
-                $parentTemplate = self::fromExtendedTemplate($currentTemplate, $matches);
-                $this->template = $parentTemplate;                
+                $this->template = $this->buildExtendedTemplate($currentTemplate, $matches);
             } else {
                 // Single template, with no parent template
                 $this->template = $currentTemplate;
@@ -62,21 +56,196 @@
 
             // Replace methods in template with valid php
             $this->template = $this->replaceMethods($this->template, $this->methods, $this->methodChecks);            
+            
+        }
+
+        private function templateFindExtends($currentTemplate) {
+            $matches;
+            preg_match_all("/@extends\((.*)\)/m", $currentTemplate, $matches, PREG_OFFSET_CAPTURE);
+            return $matches;
+        }
+
+        private function buildExtendedTemplate($currentTemplate, $matches) {
+            // Name of extended file given
+            $baseName = $matches[1][0][0];
+            $parentTemplate = $this->loadParentTemplate($baseName);
+            /*
+                With extends, we instead load the parent template.
+                We get the child template and extract any sections, and paste them into the parent.
+            */
+            // Array of sections, with opening and closing tags
+            $childTags = $this->loadChildTags($currentTemplate);
+            // Array of sections, with the required loaded markup
+            $childSections = $this->loadChildSections($currentTemplate, $childTags);
+            $parentTemplate = $this->replaceSections($parentTemplate, $childSections);
+
+            // Find any includes
+            $parentTemplate = $this->renderIncludes($parentTemplate);
+            
+            return $parentTemplate;
+        }
+
+        private function renderIncludes($template) {
+            $re = "/@include\((.*?)\)/m";
+
+            $newTemplate = $template;
+
+            $noMoreIncludes = false;
+            $matches;
+
+            /*
+
+            Find any @includes and insert into template
+            Then check if @includes have been added from the last @includes
+            Do this until no more can be found
+
+            */
+            
+            while($noMoreIncludes === false) {
+                preg_match_all($re, $newTemplate, $matches, PREG_OFFSET_CAPTURE);
+    
+                if (sizeof($matches[0]) === 0) {
+                    $noMoreIncludes = true;
+                    break;
+                } 
+
+                foreach($matches[1] as $index => $match) {    
+                    $baseName = $match[0];
+                    $body = $this->loadTemplate($baseName);
+                    $string = $matches[0][$index][0];
+                    $newTemplate = str_replace($string, $body, $newTemplate);
+                } 
+            }
+
+            return $newTemplate;
+        }
+
+        private function replaceSections($template, $sections) {
+            $newTemplate = $template;
+            foreach($sections as $key => $section) {
+                $yieldStr = '@yield(\'' . substr($key, 1, -1) . '\')';
+                $newTemplate = str_replace($yieldStr, $section, $newTemplate);
+            }
+        
+            return $newTemplate;
+        }
+        private function loadChildSections($template, $tags) {
+            $sections = [];
+            foreach($tags as $key => $tag) {
+                $newSection = $template;
+                $newSection = explode($tag['start'], $newSection)[1];
+                $newSection = explode($tag['end'], $newSection)[0];
+                $sections[$key] = $newSection;
+            }
+            return $sections;
+        }
+
+        private function loadParentTemplate($baseName) { 
+            // Replace . with /
+            $baseName = str_replace('.', '/', $baseName);
+            // Remove quote marks
+            $baseName = substr($baseName, 1, -1);
+            // Append file extension
+            $baseName .= '.tmp.php';
+            $path = APPROOT . '/views/' . $baseName;
+            return file_get_contents($path);
+        }
+
+
+
+        private function loadChildTags($template) {
+            $tags = [
+                "section" => [ "re" => "/@section\((.*?)\)/m", "type" => "start" ],
+                "endsection" => [ "re" => "/@endsection/m", "type" => "end" ]
+            ];
+            // Load any tags found in template
+            $foundTags = $this->findChildTags($tags, $template);
+
+            // Sort tags in order of position
+            $foundTags = $this->sortMethods($foundTags);
+
+            // print_r($foundTags);
+
+            // Filter opening tags
+            $startTags = array_filter($foundTags, function($tag) {
+                return $tag['type'] === 'start';
+            });
+            // Filter closing tags
+            $endTags = array_filter($foundTags, function($tag) {
+                return $tag['type'] === 'end';
+            });
+            // Must be equal number of opening/closing tags
+            if (sizeof($startTags) !== sizeof($endTags)) die('start and end sections dont match!');
+            // Combine opening and closing tags
+            $sectionPairs = $this->combineTagPairs($startTags, $endTags);
+            return $sectionPairs;
+        }
+
+        private function combineTagPairs($startTags, $endTags) {
+            $sectionPairs = [];
+            foreach($startTags as $key => $section) {
+                // Remove first closing tag
+                $endTag = array_shift($endTags);
+                $sectionPairs[$section['innerval']] = [
+                    "start" => $section['string'],
+                    "end" => $endTag['string']
+                ];
+            }
+            return $sectionPairs;
+        }
+
+        private function findChildTags($tags, $template) {
+            $foundSections = [];
+            
+            foreach($tags as $name => $tag) {
+                $tagMatches = [];
+                $re = $tag['re'];
+                preg_match_all($re, $template, $tagMatches, PREG_OFFSET_CAPTURE);
+                foreach($tagMatches[0] as $index => $match) {
+                    $string = $match[0];
+                    $position = $match[1];
+                    $innerval = isset($tagMatches[1]) ? $tagMatches[1][$index][0] : null;
+                    $type = $tags[$name]['type'];
+                    $foundSections[] = [
+                        "name" => $name,
+                        "string" => $string,
+                        "position" => $position,
+                        "innerval" => $innerval,
+                        "type" => $type
+                    ];
+                }
+            }
+            return $foundSections;
+        }
+
+        private function getTemplatePath($baseName) {
+            // Convert . to /
+            $baseName = str_replace('.', '/', $baseName);
+            // Remove single quotes
+            $baseName = substr($baseName, 1, -1);
+            // Append file extension
+            $baseName .= '.tmp.php';
+
+            return APPROOT . '/views/' . $baseName;
+        }
+
+        private function loadTemplate($baseName) {
+            $path = $this->getTemplatePath($baseName);
+            return file_get_contents($path);
         }
 
         private function fromExtendedTemplate($currentTemplate, $matches) {
-            // Extract string to replace
-            $extendString = $matches[0][0][0];
-            // Remove @extends from current template
-            $currentTemplate = str_replace($extendString, '', $currentTemplate);
-
-            $parentPath = APPROOT . '/views/' . str_replace("'", "", str_replace('.', '/', $matches[1][0][0])) . '.tmp.php';
-            $parentTemplate = file_get_contents($parentPath);
+            $parentTemplate = $this->loadTemplate($matches[1][0][0]);
 
             // Find any layout methods found in parent template
             $layoutMethods = [];
 
-            foreach($this->layoutChecks as $key => $check) {
+            $layoutChecks = [
+                "yield" => [ "re" => "/@yield\((.*)\)/m" ],            
+            ];
+
+
+            foreach($layoutChecks as $key => $check) {
                 // Each check is a layout method
                 // regex
                 $re = $check['re'];
@@ -133,9 +302,11 @@
         }
 
         private function sortMethods($methods) {
-            usort($methods, function($a, $b) {
+            $clonedArr = (array)clone(object)$methods;
+            usort($clonedArr, function($a, $b) {
                 return $a['position'] > $b['position'];
             });
+            return $clonedArr;
         }
 
         private function findMethods() {

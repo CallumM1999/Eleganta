@@ -79,6 +79,7 @@
             // An arg will consist of middleware, then an inline function or controller to load
             $request = [];
             $urlParams = self::decodePath($path);
+
             $lastElement = sizeof($args) -1;
 
             foreach($args as $index => $arg) {
@@ -145,7 +146,8 @@
                 if ($extractParameter !== false) {
                     // Parameter found
                     $parameter = $extractParameter;
-
+                    // Sanitize parameter
+                    $urlBlock = filter_var($urlBlock, FILTER_SANITIZE_SPECIAL_CHARS);
                     // Add parameter to parameters array
                     $parameters[$parameter] = $urlBlock;
 

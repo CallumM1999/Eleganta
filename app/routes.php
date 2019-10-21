@@ -2,7 +2,7 @@
 
     Route::get('/', 'Base@home');
     Route::post('/post', 'Base@post');
-    Route::match(['get', 'post', 'delete'], '/match', 'Base@match');
+    Route::match(['get', 'post', 'delete'], '/match/{id}', 'Base@match');
     Route::any('/any', 'Base@any');
     Route::view('/view', 'view', [
         "message" => "some message",

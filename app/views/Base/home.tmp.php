@@ -10,7 +10,7 @@
                 <input type="submit" value="Post method">
             </form>
         </li>
-        <li><a href="<?= URLROOT ?>/match">Match</a></li>
+        <li><a href="<?= URLROOT ?>/match/12">Match</a></li>
         <li><a href="<?= URLROOT ?>/any">Any</a></li>
         <li><a href="<?= URLROOT ?>/view">View</a></li>
         <li><a href="<?= URLROOT ?>/redirect">Redirect</a></li>
@@ -19,9 +19,4 @@
         <li><a href="<?= URLROOT ?>/sfsdifalsgdfh">Undefined route ( Route::any('*') )</a></li>
     </ul>
 
-@endsection
-
-
-@section('end')
-    <p>End section: {{ title }}</p>
 @endsection

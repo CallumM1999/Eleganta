@@ -24,7 +24,11 @@
         }
 
         public function post() {
-            View::render('post');
+            $data = [
+                "title" => "Post Title"
+            ];
+
+            View::render('post', $data);
         }
 
         public function match($request, $params) {

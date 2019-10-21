@@ -2,10 +2,10 @@
 
 @section('content')
 
-<p>Match page works! [{{ id }}]</p>
+<p>Match page works! [{{ $id }}]</p>
 
     @foreach($data['users'] as $user)
-        <p>User: {{ user->name }}</p>
+        <p>User: {{ $user->name }}</p>
     @endforeach
 
 @endsection

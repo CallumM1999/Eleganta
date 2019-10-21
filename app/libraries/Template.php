@@ -6,20 +6,20 @@
         private $methods;
      
         private $methodChecks = [
-            "if" => [ "re" => "/@if\((.*)\)/m", "rpl" => "<?php if (@) : ?>", "innerval" => true ],
-            "elseif" => [ "re" => "/@elseif\((.*)\)/m", "rpl" => "<?php elseif (@): ?>", "innerval" => true ],
+            "if" => [ "re" => "/@if\((.*?)\)/m", "rpl" => "<?php if (@) : ?>", "innerval" => true ],
+            "elseif" => [ "re" => "/@elseif\((.*?)\)/m", "rpl" => "<?php elseif (@): ?>", "innerval" => true ],
             "else" => [ "re" => "/@else/m", "rpl" => "<?php else: ?>", "innerval" => false ],
             "endif" => [ "re" => "/@endif/m", "rpl" => "<?php endif ?>", "innerval" => false ],
 
-            "unless" => [ "re" => "/@unless\((.*)\)/m", "rpl" => "<?php if(!(@)): ?>", "innerval" => true ],
+            "unless" => [ "re" => "/@unless\((.*?)\)/m", "rpl" => "<?php if(!(@)): ?>", "innerval" => true ],
             "endunless" => [ "re" => "/@endunless/m", "rpl" => "<?php endif; ?>", "innerval" => false ],
             
-            "switch" => [ "re" => "/@switch\((.*)\)/m", "rpl" => "<?php switch(@): ?>", "innerval" => true ],
-            "case" => [ "re" => "/@case\((.*)\)/m", "rpl" => "<?php case @ : ?>", "innerval" => true ],
+            "switch" => [ "re" => "/@switch\((.*?)\)/m", "rpl" => "<?php switch(@): ?>", "innerval" => true ],
+            "case" => [ "re" => "/@case\((.*?)\)/m", "rpl" => "<?php case @ : ?>", "innerval" => true ],
             "default" => [ "re" => "/@default/m", "rpl" => "<?php default: ?>", "innerval" => false ],
             "endswitch" => [ "re" => "/@endswitch/m", "rpl" => "<?php endswitch; ?>", "innerval" => false ],
 
-            "foreach" => [ "re" => "/@foreach\((.*)\)/m", "rpl" => "<?php foreach(@): ?>", "innerval" => true ],
+            "foreach" => [ "re" => "/@foreach\((.*?)\)/m", "rpl" => "<?php foreach(@): ?>", "innerval" => true ],
             "endforeach" => [ "re" => "/@endforeach/m", "rpl" => "<?php endforeach; ?>", "innerval" => false ],
 
             "for" => [ "re" => "/@for\((.*)\)/m", "rpl" => "<?php for(@): ?>", "innerval" => true ],
@@ -28,7 +28,7 @@
 
             "break" => [ "re" => "/@break/m", "rpl" => "<?php break; ?>", "innerval" => false ],
 
-            "var" => [ "re" => "/\{\{(.*?)\}\}/m", "rpl" => "<?= isset($@) ? $@ : \$data['@'] ?>", "innerval" => true ],
+            "var" => [ "re" => "/\{\{(.*?)\}\}/m", "rpl" => "<?= (isset($@)) ? $@ : \$data['@'] ?>", "innerval" => true ],
         ];
     
         public function __construct($filePath) {
@@ -294,7 +294,11 @@
                 $rpl = $checks[$value['name']]['rpl'];
                 $match = $value['value'];
 
-                $replacement = ($value['innerval']) ? str_replace('@', trim($value['contents']), $rpl) : $rpl;
+                $contents = $value['contents'];
+                $contents = trim($contents);
+                $contents = ($value['name'] === 'var') ? str_replace('$', '', $contents) : $contents;
+
+                $replacement = ($value['innerval']) ? str_replace('@', $contents, $rpl) : $rpl;
                 $newTemplate = str_replace($match, $replacement, $newTemplate);
             };
 
@@ -329,8 +333,8 @@
             return $methods;
         }
 
-        public function render($data = []) {
-            $trimmed = preg_replace('~>\s+<~', '><', $this->template);
-            echo eval(' ?>' . $trimmed . '<?php ');
+        public function render($data = []) {     
+            echo eval(' ?>' . $this->template . '<?php ');
         }
     }
+

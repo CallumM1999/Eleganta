@@ -16,13 +16,11 @@
 
 <div class="container">
 
-<h1>{{ title }}</h1>
+<h1>{{ $title }}</h1>
 
 @include('inc.navbar')
 
 @yield('content')
-
-@yield('end')
 
 </div>
     

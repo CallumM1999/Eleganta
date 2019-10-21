@@ -48,14 +48,14 @@
                 $this->template = $currentTemplate;
             }
 
-                        // Find methods in template
-                        $this->methods = $this->findMethods();
+            // Find methods in template
+            $this->methods = $this->findMethods();
 
-                        // Sort methods by order of position
-                        $this->sortMethods($this->methods);
-            
-                        // Replace methods in template with valid php
-                        $this->template = $this->replaceMethods($this->template, $this->methods, $this->methodChecks);            
+            // Sort methods by order of position
+            $this->sortMethods($this->methods);
+
+            // Replace methods in template with valid php
+            $this->template = $this->replaceMethods($this->template, $this->methods, $this->methodChecks);            
             
         }
 

@@ -1,67 +1,20 @@
 <?php
     namespace Controller;
 
-
     use \View as View;
 
     class Base extends \Controller {
-
-        public function __construct() {
-            $this->baseModel = $this->model('Base');
-        }
-
-        public function home() {
+        public function index() {
             $data = [
-                "title" => "Home Page"
+                "title" => "Eleganta",
+                "copy" => "A simple PHP MVC framework."
             ];
 
-            View::render('home', $data);
+            View::render('index', $data);
         }
 
         public function notfound() {
             http_response_code(404);
             View::render('notfound', ["title" => "404"]);
-        }
-
-        public function post() {
-            $data = [
-                "title" => "Post Title"
-            ];
-
-            View::render('post', $data);
-        }
-
-        public function match($request, $params) {
-            $results = $this->baseModel->getUsers();
-
-            $data = [
-                "users" => $results,
-                "title" => "Match",
-                "id" => $params['id']
-            ];
-
-            View::render('match', $data);
-        }
-
-        public function any() {
-            $data = [
-                "title" => "Any Page"
-            ];
-
-            View::render('any', $data);
-        }
-
-        public function middleware($request, $params) {
-
-            $data = [
-                'auth' => (isset($request['auth']) && $request['auth'] === true) ? 'true' : 'false',
-                "title" => "Middleware Page"
-            ];
-
-            View::render('middleware', $data);
-        }
-
-        public function func() {
-            View::render('func');
         }
     }

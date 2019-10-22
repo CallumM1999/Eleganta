@@ -1,1 +1,0 @@
-<p style="padding: 30px 60px; background-color: hsl(200, 50%, 20%); margin-top: 60px;color: #fff;text-align: center ">Footer</p>

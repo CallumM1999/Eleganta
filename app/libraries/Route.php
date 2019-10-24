@@ -1,4 +1,5 @@
 <?php
+
     class Route {
          public static function __callStatic($routeMethod, $args) {
             // Check request method

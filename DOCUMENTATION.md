@@ -4,7 +4,7 @@
 
 Initial setup of Elegenta.
 
-    git clone https://github.com/CallumM1999/Eleganta.git
+    git clone https://github.com/CallumM1999/Eleganta.git eleganta
 
 ### Config
 

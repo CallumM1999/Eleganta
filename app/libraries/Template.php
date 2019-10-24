@@ -129,6 +129,7 @@
         
             return $newTemplate;
         }
+
         private function loadChildSections($template, $tags) {
             $sections = [];
             foreach($tags as $key => $tag) {
@@ -151,8 +152,6 @@
             return file_get_contents($path);
         }
 
-
-
         private function loadChildTags($template) {
             $tags = [
                 "section" => [ "re" => "/@section\((.*?)\)/m", "type" => "start" ],
@@ -163,8 +162,6 @@
 
             // Sort tags in order of position
             $foundTags = $this->sortMethods($foundTags);
-
-            // print_r($foundTags);
 
             // Filter opening tags
             $startTags = array_filter($foundTags, function($tag) {
@@ -243,7 +240,6 @@
             $layoutChecks = [
                 "yield" => [ "re" => "/@yield\((.*)\)/m" ],            
             ];
-
 
             foreach($layoutChecks as $key => $check) {
                 // Each check is a layout method

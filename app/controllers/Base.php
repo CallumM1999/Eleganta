@@ -1,9 +1,11 @@
 <?php
+
     namespace Controller;
 
     use \View as View;
 
     class Base extends \Controller {
+
         public function index() {
             $data = [
                 "title" => "Eleganta",

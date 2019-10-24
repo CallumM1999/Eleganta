@@ -29,3 +29,5 @@ Click here for [Documentation](https://github.com/CallumM1999/Eleganta/blob/mast
 
 ## What I learned
 What I learned after building the framework and using the framework to build a site.
+
+Need better errro handling

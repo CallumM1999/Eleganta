@@ -4,7 +4,7 @@
     define('APPROOT', dirname(dirname(__FILE__)));
 
     // URL Root
-    define('URLROOT', 'http://localhost/mvc');
+    define('URLROOT', 'http://localhost/Elegenta');
 
     // Database Config
     define('DB_HOST', '');

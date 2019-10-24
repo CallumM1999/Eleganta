@@ -9,7 +9,7 @@
 
     <div class="link-group">
         <a class="link-group-button" href="https://github.com/CallumM1999/Eleganta">Source</a>
-        <a class="link-group-button" href="">Documentation</a>
+        <a class="link-group-button" href="https://github.com/CallumM1999/Eleganta/blob/master/DOCUMENTATION.md">Documentation</a>
     </div>
 
 @endsection

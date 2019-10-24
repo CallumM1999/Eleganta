@@ -2,7 +2,7 @@
 
 ## Setup
 
-How to initially setup the project
+Initial setup of Elegenta.
 
     git clone https://github.com/CallumM1999/Eleganta.git
 
@@ -10,7 +10,7 @@ How to initially setup the project
 
 The config file can be found in __/Elegentia/app/config/config.php__.
 
-Here, you can change the url root as well as set db config.
+Here, you can change the URL root as well as set the Database config.
 
 ### .htaccess
 
@@ -29,19 +29,19 @@ You must change line 4:
 
     RewriteBase /mvc/public/
 
-Change it to the relative path of your project. If you are installing it on a server, it should be __/public/__.
+Change the value to the relative path of your project. If you are installing it on a server, it should be __/public/__.
 
 ## Routes
 
-At the base of the application is routes.php. The routes file allows you to define paths within your application.
+At the base of the application, you will find the file routes.php. In this file, you can define the request paths within your application.
 
-Each route is build from the method, the path, and the controller.
+Each route is built from three parts, the method, the path, and the controller.
 
 ### Route Methods
 
     Route::get('/settings', 'Base@settings');
 
-Route accepts the following methods:
+The Route method accepts the following methods:
 
 - Get
 - Post
@@ -50,72 +50,62 @@ Route accepts the following methods:
 - Delete
 - Options
 
-Those are specific methods. Another Route function is Match. Match will accept an array of route methods.
+Those are specific methods. There are also two less specitic route method types.
+
+The first method is Match, which accepts an array of methods.
 
     Route::match(['get', 'post'], '/settings', 'Base@settings');
 
-The final method is any, which accepts any method.
+The second method is Any, which will accept any method.
 
     Route::any('/settings', 'Base@settings');
 
 ### Route Paths
 
-Asterisks accept any path.
+If a path is set to an asterisk, it will accept any path.
 
     Route::get('*', 'Base@settings');
 
-Paths can also accept multiple parameters, which will be returned in the __$params__ array.
+A path can also accept parameters. A parameter is set with curly braces, and the value is returned in the __$params__ array.
 
     Route::get('/users/{id}', 'Base@settings');
 
 ### Route controller
 
-The final part of a route is the controller. This can either reference a controller method, or it can be an inline function.
+The last part is the controller. The controller is where any logic processing is done and can access the model. The controller then passes this data to the view.
 
-The first part references the controller, whereas the last section references the method.
+A controller can either be a class method or an inline function.
 
-    class Base extends \Controller {
-        public function index() {
-            $data = [
-                "title" => "Eleganta",
-                "copy" => "A simple PHP MVC framework."
-            ];
-
-            View::render('index', $data);
-        }
+    Route::get('/settings', 'Base@settings');
 
 Or as an inline function.
 
-    Route::get('/settings', function($request, $response) {
-
-        $data = [
-            "title" => "Eleganta",
-            "copy" => "A simple PHP MVC framework."
-        ];
-
+    Route::get('/settings', function($request, $params) {
         View::render('settings');
-    })
+    });
 
 ### Route Middleware
 
-Route middleware is added between the path and the controller. Middleware has access to the __$request__ array, which will be passed down to the controller.
+Middleware is an optional part of a route. Middleware is a reusable function that is inserted before the controller.
 
-Middleware can eiither be an inline function, or in the Middleware class. There is no real function to the Middleware class, it's just a tidy location.
+Middleware can either be an inline function or a method in the Middleware class.
 
     Route::get('/settings', function($request) {
+
         // Do something
         return $request;
+
     },'Base@settings');
 
 Or in the Middleware class.
 
-    Route::get('/settings', Middleware::auth,'Base@settings');
+    Route::get('/settings', Middleware::auth, 'Base@settings');
 
 ## Controller
 
-This is the layout for creating a controller.
+Below is the layout for a controller.
 
-__$request__ and __$params__ are passed into the method. The request array is used by middleware to pass data. The params array contains data from encoded URLs.
+__$request__ and __$params__ are passed into each method. The __$request__ array is used by middleware to pass data. The __$params__ array will contain data from encoded URLs.
 
     namespace Controller;
 
@@ -134,7 +124,7 @@ __$request__ and __$params__ are passed into the method. The request array is us
 
 ## View
 
-When creating a view, you can either use normal PHP, or use the templating engine. To use templating, you must name the file __view.tmp.php__
+When creating a view, you can either use a normal PHP view or use the templating engine. If you want to use the template engine, you must name the file __view.tmp.php__.
 
 ### Default view
 
@@ -146,7 +136,7 @@ Data can be passed through the controller. You can access it from the __$data__ 
 
 #### Layout
 
-When using templating, you have the option to use a template. A template is a reusable layout, that will accept child content. In the template, __@yield()__ defines where child content can go.
+When using the template layout, you have the option to use a parent template. A parent template is a reusable layout, that will accept child content. In the parent template, __@yield__ defines where child content will go.
 
     <body>
 
@@ -160,9 +150,9 @@ When using templating, you have the option to use a template. A template is a re
         
     </body>
 
-In the child page, you  must use __@extends__. This defines the parent template, being the file path from __/views/__. So the parent template is found in __/views/inc/base.tmp.php__.
+In the child template, you must use __@extends__ to define the parent template. 
 
-In the child template, you must define the content within __@section(__ tags. These tags correspond to the __@yield__ tags in the parent.
+The child template must have corresponding __@content__ tags to the __@yield__ tags found in the parent.
 
     @extends('inc.base')
 
@@ -172,15 +162,15 @@ In the child template, you must define the content within __@section(__ tags. Th
 
     @endsection
 
-If you want to include content from another template, you can use __@include__. This behaves like __require__ in PHP.
+To include other template files, you can use the __@include__ method. 
 
 #### Logic
 
-The templating language includes many methods typically found in PHP, but with a more friendly layout.
+The templating language includes many familiar methods, but with a more friendly layout.
 
 ##### Echo
 
-To echo data from __$data__, you can use the moustache syntax.
+To echo data from __$data__, you can use the mustache syntax.
 
     <h1>{{ $title }}</h1>
 
@@ -216,7 +206,7 @@ To echo data from __$data__, you can use the moustache syntax.
 
 ## Model
 
-When creating a model, it shoud extend the BaseModel class. Within a model, you can create methods that interact with the database.
+When creating a model, it should extend the BaseModel class. Within a model, you can create methods that interact with the database.
 
     namespace Model;
 
@@ -231,13 +221,13 @@ When creating a model, it shoud extend the BaseModel class. Within a model, you 
         }   
     }
 
-To access the model from a controller, you must add some code to the __construct method.
+To access a model from a controller, you must add the following code to the __construct method.
 
     public function __construct() {
         $this->baseModel = $this->model('Base');
     }
 
-Now that the Base model is loaded, you can use it's methods.
+One the Base model is loaded within the controller, you can access its methods.
 
     public function index() {
         $users = $this->baseModel->etUsers();
@@ -251,7 +241,7 @@ Now that the Base model is loaded, you can use it's methods.
 
 ## Middleware
 
-You can create middleware as an inline function within a Route, however, I recommend that you add the method to the Middleware class.
+Middleware can either be an inline function or a method in the Middleware class.
 
     abstract class Middleware {
         public static function auth($request) {
@@ -261,4 +251,4 @@ You can create middleware as an inline function within a Route, however, I recom
         }
     }
 
-Middlware accepts only one parameter, __$request__. Request is used to pass data through middleware and to the controller, so you must return the $request array at the end.
+Middleware only accepts one parameter, __$request__. The Request parameter is used when passing data in middleware to the controller. You must remember to return __$request__ in the middleware function.

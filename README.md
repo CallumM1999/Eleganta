@@ -28,11 +28,11 @@ Link to project built with framework.
 
 ## Documentation
 
-Click here for [Documentation](https://github.com/CallumM1999/Eleganta/blob/master/DOCUMENTATION.md).
+Click here for [Documentation](https://github.com/thecallum/Eleganta/blob/master/DOCUMENTATION.md).
 
 ## What I learned
 
-[Kort](https://github.com/CallumM1999/kort) is a website that I build with Elegenta. Here is what I learned after building the site.
+[Kort](https://github.com/thecallum/kort) is a website that I build with Elegenta. Here is what I learned after building the site.
 
 ### Error handing
 

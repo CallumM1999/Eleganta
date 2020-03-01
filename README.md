@@ -10,13 +10,12 @@ A simple PHP MVC framework.
 - [What I learned](#What-I-learned)
 
 ## About
+Eleganta is a simple PHP MVC framework. Eleganta also comes with a custom templating engine to make building pages easier.
 
-Eleganta is a simple PHP MVC framework. 
-Eleganta also comes with a custom templating engine to make building pages easier.
+I built Eleganta as a learning exercise. I first learned PHP from an [Object Oriented PHP Course](https://www.udemy.com/course/object-oriented-php-mvc/). During the course, I build a PHP framework. Elegenta is based on what I learned, but added some improvements.
 
-Eleganta was creating as a learning exercise. I first learned PHP from this [Object Oriented PHP](https://www.udemy.com/course/object-oriented-php-mvc/) Course. During the course, I build a PHP framework. I wanted to improve the framework, as well as consolidate what I learned in the course.
 
-Link to project built with framework.
+[Kort](https://github.com/thecallum/kort) is a project that I build using the framework.
 
 ## Features
 
